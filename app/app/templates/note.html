@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/note.js') }}"></script>
+    <title>Notatka</title>
+</head>
+<body>
+    <h1>{{note.title}}</h1>
+    <p>{{ note.note | safe }}</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+            {% if category == 'verify_error' %}
+                <li style="color: red;">{{ message }}</li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+    
+    {% if note.is_encrypted and not has_been_decoded %}
+        <p>Notatka jest zaszyfrowana.</p>
+        <p>Podaj hasło aby odszyfrować notatkę</p>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="password">Wpisz hasło notatki:</label>
+            <input type="password" name="password" id="password" required>
+            <button type="submit">Odszyfruj</button>
+        </form>
+    {% endif %}
+    
+    <form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="is_public">Widoczność notatki(publiczna/prywatna):</label>
+        <input type="checkbox" 
+               name="is_public" 
+               id="is_public" 
+               data-note-id="{{ note.id }}"
+               {% if note.is_public %}checked{% endif %}>
+    </form>
+
+    <h2>Udostępniona użytkownikom:</h2>
+    <ul id="shared-users-list">
+        {% if shared_users %}
+            {% for user in shared_users %}
+                <li id="user-{{ user.id }}">
+                    {{ user.name }}
+                    <button class="remove-user" data-user-id="{{ user.id }}">Usuń</button>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li id="no-users">Brak użytkowników.</li>
+        {% endif %}
+    </ul>
+    <form id="add-user-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="new-username">Dodaj użytkownika (Nazwa użytkownika):</label>
+        <input type="text" id="new-username" name="username" required>
+        <button type="submit">Dodaj</button>
+    </form>
+
+
+    <a href="{{ url_for('note_routes.dashboard') }}"><button>Powrót do dashboard</button></a>
+
+</body>
+</html>
+
+
+
+

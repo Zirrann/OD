@@ -1,0 +1,24 @@
+.extra_info {
+  position: absolute;
+  left: -9999px;
+  visibility: hidden;
+}
+
+#password-strength {
+  width: 100%;
+  height: 10px;
+  background-color: #e0e0e0;
+  margin-top: 10px;
+}
+#password-strength-bar {
+  height: 100%;
+}
+.strength-weak {
+  background-color: red;
+}
+.strength-medium {
+  background-color: orange;
+}
+.strength-strong {
+  background-color: green;
+}

@@ -1,0 +1,48 @@
+<!-- enable_2fa.html -->
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Włącz 2FA</title>
+</head>
+<body>
+    <body>
+        {% if not two_factor_enabled %}
+            <h1>Weryfikacja dwuetapowa (2FA) jest wyłączona</h1>
+    
+            <p>Użyj aplikacji do generowania kodów do 2FA i zseskanuj w niej poniższy kod QR. Następnie wprowadź wygenerowany kod, aby zakończyć proces włączania 2FA.</p>
+    
+            {% if provisioning_uri %}
+                <img src="https://api.qrserver.com/v1/create-qr-code/?data={{ provisioning_uri }}" alt="QR Code">
+                <p>Jeśli nie możesz zeskanować powyższego kodu QR, użyj tego linku: <a href="https://api.qrserver.com/v1/create-qr-code/?data=otpauth:{{ provisioning_uri }}" target="_blank">Link do kodu QR</a></p>
+            {% endif %}
+    
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label for="otp">Wprowadź kod z aplikacji 2FA:</label>
+                <input type="text" id="otp" name="otp" required>
+                <button type="submit">Uruchom 2FA</button>
+            </form>
+        
+        {% else %}
+            <h1>Weryfikacja dwuetapowa jest włączona</h1>
+            <form method="POST" action="{{ url_for('auth_routes.enable_2fa') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit">Wyłącz 2FA</button>
+            </form>
+        {% endif %}
+    
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <a href="{{ url_for('note_routes.dashboard') }}"><button>Powrót do dashboard</button></a>
+    </body>
+</body>
+</html>

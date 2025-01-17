@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1">
+
+    <style>
+    .extra_info {
+        position: absolute;
+        left: -9999px;
+        visibility: hidden;
+    }
+
+    .notes-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .notes-column:first-child {
+        flex: 1; 
+        margin-right: 10px;
+    }
+
+    .notes-column:last-child {
+        flex: 1;
+        margin-left: 10px;
+    }
+    </style>
+</head>
+<body>
+    <h1>Witaj, {{ username }}!</h1>
+
+    <h2>Dodaj nową notatkę:</h2>
+    <form action="{{ url_for('note_routes.add_note') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="extra_info">
+            <label for="extra_info">x</label>
+            <input type="text" id="extra_info" name="extra_info">
+        </div>
+
+        <input type="text" id="title" name="title" maxlength="30" required value="{{ title or '' }}">
+
+        <br>
+        <textarea name="note" rows="10" cols="200" placeholder="Wpisz treść notatki" required>{{ note_text or '' }}</textarea>
+        <br>
+        <label>
+            <input type="checkbox" name="is_public" {% if is_public %}checked{% endif %}> Udostępnij publicznie
+        </label>
+        <br>
+        
+        <label for="password">Hasło do szyfrowania:</label>
+        <input type="password" id="password" name="password" placeholder="Wpisz hasło">
+        <br>
+        {% with messages = get_flashed_messages(category_filter=["note_password_error"]) %}
+            {% if messages %}
+                <ul class="error">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <br>
+    
+        <input type="submit" value="Dodaj">
+        <input type="submit" name="action" value="Dodaj zaszyfrowaną notatkę">
+    </form>
+
+    {% if notes or shared_notes %}
+    <h2>Twoje notatki:</h2>
+    <div class="notes-container">
+        {% if notes %}
+        <div class="notes-column">
+            <h3>Twoje notatki</h3>
+            <ul>
+                {% for note in notes %}
+                <li>
+                    <div>
+                        <p>Notatka {{ loop.index }}:</p>
+                        {{ note.title }}
+                        <a href="{{ url_for('note_routes.view_note', note_id=note.id) }}">
+                            <button>Wyświetl</button>
+                        </a>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% else %}
+        <p>Brak notatek.</p>
+        {% endif %}
+
+        {% if shared_notes %}
+        <div class="notes-column">
+            <h3>Notatki udostępnione dla Ciebie</h3>
+            <ul>
+                {% for item in shared_notes %}
+                <li>
+                    <div>
+                        <p>Notatka użytkownika {{ item.user_name }}:</p>
+                        {{ item.note.title }}
+                        <a href="{{ url_for('note_routes.view_shared_note', note_id=item.note.id) }}">
+                            <button>Wyświetl</button>
+                        </a>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% else %}
+        <p>Brak notatek innych użytkowników.</p>
+        {% endif %}
+    </div>
+    {% else %}
+    <p>Brak notatek.</p>
+    {% endif %}
+
+    <div>
+        <a href="{{ url_for('note_routes.public_notes') }}"><button>Zobacz publiczne notatki</button></a>
+    </div>
+    <div>
+        <a href="{{ url_for('auth_routes.login_history_page') }}"><button>Historia logowań</button></a>    
+    </div>
+    <div>
+        <a href="{{ url_for('auth_routes.enable_2fa') }}"><button>Ustawienia weryfikacji dwuetapowej</button></a>
+    </div>
+
+
+    <form action="{{ url_for('auth_routes.logout') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="submit" value="Wyloguj">
+    </form>
+</body>
+</html>

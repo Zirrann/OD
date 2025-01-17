@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie</title>
+</head>
+<body>
+    <h1>Logowanie</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+            {% for category, message in messages %}
+                {% if category in ['login_error', 'otp_error', 'validation_error'] %}
+                    <li style="color: red;">{{ message }}</li>
+                {% elif category in ['success'] %}
+                    <li style="color: green;">{{ message }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+
+
+    
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
+        {% if show_login_form %}
+            <label for="login">Login:</label>
+            <input type="text" id="login" name="login" required><br>
+    
+            <label for="password">Hasło:</label>
+            <input type="password" id="password" name="password" required><br>
+        {% endif %}
+    
+        {% if not show_login_form %}
+            <label for="otp">Kod OTP:</label>
+            <input type="text" id="otp" name="otp" required>
+        {% endif %}
+    
+        <button type="submit">
+            {% if show_login_form %}Zaloguj się{% else %}Potwierdź{% endif %}
+        </button>
+    </form>
+    
+    {% if not show_login_form %}
+        <a href="{{ url_for('auth_routes.clear') }}"><button>Anuluj</button></a><br>
+    {% endif %}
+    <br>
+    <a href="{{ url_for('auth_routes.register') }}"><button>Zarejestruj się</button></a><br>
+    <label>Nie pamiętasz hasła?</label>
+    <a href="{{ url_for('auth_routes.reset_password') }}"><button>Zresetuj hasło</button></a>
+</body>
+</html>

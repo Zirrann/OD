@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publiczna Notatka</title>
+</head>
+<body>
+    <h3>title</h3>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+            {% if category == 'verify_error' %}
+                <li style="color: red;">{{ message }}</li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+
+    {% if is_encrypted and not has_been_decoded %}
+        <p>Notatka jest zaszyfrowana.</p>
+        <p>Podaj hasło aby ją odszyfrować:</p>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="password">Wpisz hasło notatki:</label>
+            <input type="password" name="password" id="password" required>
+            <button type="submit">Odszyfruj</button>
+        </form>
+    {% endif %}
+
+    <p>{{ note | safe }}</p>
+
+    <a href="{{ url_for('note_routes.public_notes') }}">
+        <button>Powrót do publicznych notatek</button>
+    </a>
+
+    
+</body>
+</html>

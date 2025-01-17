@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia logowań</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Historia logowań użytkownika</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Adres IP</th>
+            <th>Czas logowania</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for login in login_history %}
+        <tr>
+            <td>{{ login.ip_address }}</td>
+            <td>{{ login.login_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="2">Brak logowań.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('note_routes.dashboard') }}">Powrót do dashboard</a>
+
+</body>
+</html>

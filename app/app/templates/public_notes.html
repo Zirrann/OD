@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Public Notes</title>
+</head>
+<body>
+    <h1>Public Notes</h1>
+    <a href="{{ url_for('note_routes.dashboard') }}"><button>Powrót do dashboard</button></a>
+    <ul>
+        {% for note, user in notes %}
+        <li>
+            <strong>{{ user.name }}</strong>:
+            {{ note.title}} 
+            <a href="{{ url_for('note_routes.view_public_note', note_id=note.id) }}">
+                <button>Wyświetl</button>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    
+    <a href="{{ url_for('note_routes.dashboard') }}"><button>Powrót do dashboard</button></a>
+</body>
+</html>

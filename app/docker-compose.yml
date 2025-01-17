@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  flask_app:
+    build:
+      context: .
+    container_name: flask_app
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/app
+      - ./var/app-instance/sqlite3.db:/app/sqlite3.db
+      - ./nginx/ssl:/etc/ssl:ro
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+    command: gunicorn --workers 4 --bind 0.0.0.0:5000 main:app
+
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx
+    ports:
+      - "443:443"
+    depends_on:
+      - flask_app
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./app/static:/app/static
+

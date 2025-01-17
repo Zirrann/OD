@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Rejestracja</title>
+    <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1">
+    <style>
+        #password-strength {
+        width: 100%;
+        height: 10px;
+        background-color: #e0e0e0;
+        margin-top: 10px;
+        }
+        #password-strength-bar {
+        height: 100%;
+        }
+        .strength-weak {
+        background-color: red;
+        }
+        .strength-medium {
+        background-color: orange;
+        }
+        .strength-strong {
+        background-color: green;
+        }
+    </style>
+</head>
+<body>
+<h1>Rejestracja</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+<form id="registrationForm" action="{{ url_for('auth_routes.register') }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <label for="name">Imię:</label>
+    <input type="text" id="name" name="name" required><br>
+
+    <label for="login">Login:</label>
+    <input type="text" id="login" name="login" required><br>
+
+    <label for="password">Hasło:</label>
+    <input type="password" id="password" name="password" oninput="evaluatePasswordStrength()" required><br>
+    <p id="strength-text"></p>
+    <div id="password-strength">
+        <div id="password-strength-bar"></div>
+    </div>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br>
+
+    <button type="button" id="sendCodeButton" style="display: none;">Wyślij kod rejestracyjny</button>
+
+    <label for="registration_code" id="registrationCodeLabel" style="display: none;">Kod rejestracyjny:</label>
+    <input type="text" id="registration_code" name="registration_code" style="display: none;"><br>
+
+    <input type="submit" value="Zarejestruj się">
+</form>
+
+<p>Masz już konto? <a href="{{ url_for('auth_routes.index') }}"><button>Zaloguj się</button></a></p>
+
+</body>
+</html>
