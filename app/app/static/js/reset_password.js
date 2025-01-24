@@ -30,33 +30,4 @@ $(document).ready(function() {
             }
         });
     });
-
-    $("#reset-password-form").on("submit", function (e) {
-        e.preventDefault();
-        const resetCode = $("#reset_code").val();
-        const newPassword = $("#new_password").val();
-
-        $.ajax({
-            url: "https://localhost/reset_password",
-            type: "POST",
-            data: {
-                email: userEmail,
-                reset_code: resetCode,
-                new_password: newPassword
-            },
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
-           // contentType: "application/x-www-form-urlencoded",
-            success: function (response) {
-                $("#messages").html(`<p style="color: green;">${response.message}</p>`);
-                $("#reset-password-form").hide(); 
-                window.location.href = "/"
-            },
-            error: function (xhr) {
-                const errorMessage = xhr.responseJSON.message || "Błąd podczas zmiany hasła.";
-                $("#messages").html(`<p style="color: red;">${errorMessage}</p>`);
-            }
-        });
-    });
 });

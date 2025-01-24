@@ -46,6 +46,13 @@ def check_login_credentials(login, password):
         return user
     return None
 
+def validate_register_user(login, name, password, email):
+    validate.validate_login(login, "Login")
+    validate.validate_login(name, "Nazwa użytkownika")
+    validate.validate_password(password)
+    validate.validate_email(email)
+
+
 def register_user(name, login, password, email):
     validate.validate_login(login, "Login")
     validate.validate_login(name, "Nazwa użytkownika")

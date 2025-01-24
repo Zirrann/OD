@@ -213,7 +213,7 @@ def reset_password():
         db.session.commit()
         limiter.limit("1 per hour", error_message="Za dużo prób resetu hasła. Spróbuj ponownie za godzinę.")(reset_password)
         flash("Hasło zostało zmienione pomyślnie! Możesz się teraz zalogować.", "success")
-        return render_template('index.html')
+        redirect(url_for('auth_routes.index', _scheme='https', _external=True))
 
     return render_template('reset_password.html')
 
